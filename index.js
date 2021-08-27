@@ -26,7 +26,7 @@ inquirer
         {
             type: 'input',
             message: 'Enter the name(s) of those who contributed:',
-            name:'contributing'
+            name:'contribution'
         },
         {
             type: 'input',
@@ -57,11 +57,6 @@ inquirer
                 'Eclipse Public License',
                 'Apache License'
             ]
-        },
-        {
-            type: 'input',
-            message: 'What should I do if I have an issue?',
-            name: 'questions'
         }
     ])
     .then((res) => {
@@ -73,20 +68,101 @@ inquirer
     })
 
 
-    function createReadme() {
-        let title;
-        let description;
-        let tableOfCont;
-        let install;
-        let usage;
-        let contribution;
-        let test;
-        let license = input.license;
-        let questions;
+    function createReadme(res) {
+        let titleEl;
+        let descriptionEl;
+        let tableOfContEl;
+        let installEl;
+        let usageEl;
+        let contributionEL;
+        let testEL;
+        let questionsEL;
+        let licenseEl = res.license;
 
         const descriptionHead = '## Description';
         const tocHead = '## Table of Contents';
         const installHead = '## Installation';
-        const usageHead = '##'
+        const usageHead = '## Usage';
+        const contributionHead = '## Contribution';
+        const testHead = '## Tests';
+        const licenseHead = '## License';
+        const questionHead = '## Questions';
         
+        let finalREADME = [];
+
+        if (res.title == '') {
+            titleEl = '# Title';
+        } else {
+            titleEl = `# ${res.title}`;
+        }
+        finalREADME.push(titleEl);
+
+        let badge = `![](https://img.shields.io/badge/license-${licenseEl.replace(/ /g, '%20')}-blue?style=flat-square)`;
+        finalREADME.push(badge);
+
+        if (res.descriptionEl == '') {
+            descriptionEl = `${descriptionHead}\n Enter project description here`;
+        } else {
+            descriptionEl = `${descriptionHead}\n ${res.description}`;
+        }
+        finalREADME.push(descriptionEl);
+
+        
+        
+        tableOfContEl = `${tocHead}\n* [Installation](#installation)\n* [Usage](#usage)\n* [Contribution](#contribution)\n* [Tests](#tests)\n* [License](#license)\n* [Questions](#question)\n*`;
+        finalREADME.push(tableOfContEl);
+
+        
+        
+        finalREADME.push(`${installHead}`);
+
+        installEl = res.install.split(',').map(item => {
+            return `${item.trim()}`;
+        });
+
+        for (let i=0; i<installEl.length; i++) {
+            finalREADME.push(`${i+1}. ${installEl[i]}`);
+        }
+
+        if (res.usage == '') {
+            usageEl = `\n${usageHead}\n Enter project usage here.`;
+        } else {
+            usageEl = `\n${usageHead}\n ${res.usage}`;
+        }
+        finalREADME.push(usageEl);
+
+        
+        
+        if (res.contribution == '') {
+            contributionEL = `\n${contributionHead}\n Enter project contribution here`;
+        } else {
+            contributionEL = `\n ${contributionHead}\n ${res.contribution}`;
+        }
+        finalREADME.push(contributionEL);
+
+
+        if (res.tests == '') {
+            testEL = `\n${testHead}\n Enter test info here`;
+        } else {
+            testEL = `\n${testHead}\n ${res.tests}`;
+        }
+        finalREADME.push(testEL);
+
+
+        licenseEl = `\n${licenseHead}\n This project is covered under the ${res.license}.`;
+        finalREADME.push(licenseEl);
+
+
+        questionsEL = `\n${questionHead}\n For questions about this project please see my Github at [${res.github}](https://github.com/${res.github}), or reach out to me be email at ${res.email}`;
+        finalREADME.push(questionsEL);
+
+        const README = finalREADME.join('\n');
+
+        fs.writeFile('./example/README-example.md', README, (err) => {
+            if (err) {
+                throw err;
+            } else {
+                console.log('README Successfully Created!');
+            }
+        });
     };
